@@ -1,10 +1,11 @@
 <template>
-  <div class="app">
-    <header>
-      <h1>Менеджер книг</h1>
-      <p>Управляй своей библиотекой</p>
+  <div class="container py-4">
+    <header class="text-center mb-4">
+      <h1 class="display-4 fw-bold text-primary">Менеджер книг</h1>
+      <p class="lead text-secondary">Управляй своей библиотекой</p>
     </header>
-    <main>
+
+    <main class="bg-white p-4 rounded-3 shadow-sm">
       <AddBookForm @add-book="addBook" />
 
       <BookFilters
@@ -13,21 +14,28 @@
         :books="books"
       />
 
-      <div v-if="filteredBooks.length === 0" class="empty-state">
-        <p>Книги не найдены :(</p>
-        <p>Добавьте первую книгу или измените параметры поиска</p>
+      <div v-if="filteredBooks.length === 0" class="text-center py-5">
+        <p class="display-1 text-muted mb-3">📚</p>
+        <p class="h4 text-muted mb-2">Книги не найдены :(</p>
+        <p class="text-muted">
+          Добавьте первую книгу или измените параметры поиска
+        </p>
       </div>
 
-      <div v-else class="books-list">
-        <BookCard
+      <div v-else class="row g-3 mt-2">
+        <div
           v-for="book in filteredBooks"
           :key="book.id"
-          :book="book"
-          @toggle="toggleBook(book.id)"
-          @delete="deleteBook(book.id)"
-          @rate="rateBook(book.id, $event)"
-          @favorite="toggleFavorite(book.id)"
-        />
+          class="col-12 col-md-6 col-lg-4"
+        >
+          <BookCard
+            :book="book"
+            @toggle="toggleBook(book.id)"
+            @delete="deleteBook(book.id)"
+            @rate="rateBook(book.id, $event)"
+            @favorite="toggleFavorite(book.id)"
+          />
+        </div>
       </div>
     </main>
   </div>
@@ -38,18 +46,17 @@ import { ref, computed, watch } from "vue";
 import AddBookForm from "./components/AddBookForm.vue";
 import BookFilters from "./components/BookFilters.vue";
 import BookCard from "./components/BookCard.vue";
-// Состояние книг с загрузкой из localStorage
+
 const books = ref([]);
-// Загрузка сохраненных книг
+
 const savedBooks = localStorage.getItem("books");
 if (savedBooks) {
   books.value = JSON.parse(savedBooks);
 }
-// Состояния фильтрации
+
 const currentFilter = ref("all");
 const searchQuery = ref("");
 
-// Сохранение изменений
 watch(
   books,
   (newBooks) => {
@@ -58,7 +65,6 @@ watch(
   { deep: true },
 );
 
-// Добавление книги
 const addBook = (bookData) => {
   const newBook = {
     id: Date.now(),
@@ -70,7 +76,6 @@ const addBook = (bookData) => {
   books.value.push(newBook);
 };
 
-// Переключение статуса
 const toggleBook = (id) => {
   const book = books.value.find((b) => b.id === id);
   if (book) {
@@ -81,7 +86,6 @@ const toggleBook = (id) => {
   }
 };
 
-// Оценка книги
 const rateBook = (id, rating) => {
   const book = books.value.find((b) => b.id === id);
   if (book && book.completed) {
@@ -89,7 +93,6 @@ const rateBook = (id, rating) => {
   }
 };
 
-// Переключение статуса "избранное"
 const toggleFavorite = (id) => {
   const book = books.value.find((b) => b.id === id);
   if (book) {
@@ -97,14 +100,12 @@ const toggleFavorite = (id) => {
   }
 };
 
-// Удаление книги
 const deleteBook = (id) => {
   if (confirm("Удалить книгу?")) {
     books.value = books.value.filter((b) => b.id !== id);
   }
 };
 
-// Фильтрация и поиск книг
 const filteredBooks = computed(() => {
   return books.value
     .filter((book) => {
@@ -125,59 +126,10 @@ const filteredBooks = computed(() => {
 </script>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@import "bootstrap/dist/css/bootstrap.min.css";
 
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: #f0f2f5;
-  line-height: 1.6;
-}
-
-.app {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-header {
-  text-align: center;
-  margin-bottom: 30px;
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-header h1 {
-  font-size: 2.5em;
-  margin-bottom: 5px;
-}
-
-main {
-  background: white;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.empty-state {
-  text-align: center;
-  padding: 40px;
-  color: #999;
-  font-size: 1.2em;
-}
-
-.empty-state p:first-child {
-  font-size: 3em;
-  margin-bottom: 20px;
-}
-
-.books-list {
-  margin-top: 20px;
+  background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+  min-height: 100vh;
 }
 </style>
